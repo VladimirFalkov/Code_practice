@@ -57,43 +57,45 @@ def check_status(lst:list)-> bool:
     for steps in win_positions:
         if set(steps).issubset(lst):
             return True
-# just for printing matrix with actual information
+# just for printing battlefield with actual information
 def print_matrix():        
     for row in field:
         print(*row)
     print('#'* 90)
 
-# this func for changing digit to player's
-def change_sign(sign, step):
+# this func for changing digit to players's sign
+def change_sign(sign:str, move:int):
     for i in range(len(field)):
-        if step in field[i]:
-            field[i][field[i].index(step)] = sign
+        if move in field[i]:
+            field[i][field[i].index(move)] = sign
             break
 # main func for game
 def game_processing():
     print(f"You play with {person_sign}")
     print_matrix()
     global status   
-    while status != True:
+    while status is not True:
         if len(all_steps) > 0:
-            change_sign(person_sign,person_step())
+            change_sign(person_sign,person_move())
             status = check_status(person_steps_hystory)
             print_matrix()
             print(f"You play with {person_sign}")
             print(f"Computer play with {computer_sign}")
-            if status == True:
+            if status:
                 message = f"The Winner is {person}"
                 break
             else:
                 change_sign(computer_sign,computer_step())
                 status = check_status(computer_steps_history)
                 print_matrix()
-                if status == True:
+                if status:
                     message = "The Winner is Computer"
                     break
         else:
             message = "it is Draw"
             return message
     return message
+
+
 person = input("Let's start game, What's your name ")
 print(game_processing())
