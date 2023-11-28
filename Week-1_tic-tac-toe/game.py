@@ -1,30 +1,63 @@
 import random
+
 # create matrix 3x3 as battle field, digit are used as move's coordinate
-field = [[1, 2, 3],[4, 5, 6], [7, 8, 9]]
+field = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 # combination whiches can bring Victory
 win_positions = [
-                (1,2,3,),
-                (4,5,6,),
-                (7,8,9,),
-                (1,5,9,),
-                (3,5,7,),
-                (1,4,7,),
-                (2,5,8,),
-                (3,6,9,),
-                 ]
+    (
+        1,
+        2,
+        3,
+    ),
+    (
+        4,
+        5,
+        6,
+    ),
+    (
+        7,
+        8,
+        9,
+    ),
+    (
+        1,
+        5,
+        9,
+    ),
+    (
+        3,
+        5,
+        7,
+    ),
+    (
+        1,
+        4,
+        7,
+    ),
+    (
+        2,
+        5,
+        8,
+    ),
+    (
+        3,
+        6,
+        9,
+    ),
+]
+
 
 # some additional vars
-all_steps = [1,2,3,4,5,6,7,8,9]
+all_steps = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 computer_steps_history = []
-person_steps_hystory = []
+person_steps_history = []
 
-cross_or_zero = ['0', 'X']
+cross_or_zero = ["0", "X"]
 status = False
 
-person_sign = random.choice(cross_or_zero) # random choise sign for person
+person_sign = random.choice(cross_or_zero)  # random choise sign for person
 cross_or_zero.remove(person_sign)
 computer_sign = cross_or_zero[0]
-
 
 
 def computer_step():
@@ -33,51 +66,55 @@ def computer_step():
     all_steps.remove(step)
     print(f"Computer's step is {step}")
     return step
-        
-        
 
 
-# func for human steps, choose a step, save it to history, delete from all steps list 
+# func for human steps, choose a step, save it to history, delete from all steps list
 def person_move():
     move = input("Ваш ход! ")
-    # check move is digit 
-    while move.isdigit()is not True:
+    # check move is digit
+    while move.isdigit() is not True:
         move = input("Выберете другой ход! ")
     # check if move is free
     if int(move) in all_steps:
         move = int(move)
-        person_steps_hystory.append(move)
+        person_steps_history.append(move)
         all_steps.remove(move)
         return move
     else:
         move = input("Выберете другой ход! ")
 
-# check  if there is winning combination 
-def check_status(lst:list)-> bool:
+
+# check  if there is winning combination
+def check_status(lst: list) -> bool:
     for steps in win_positions:
         if set(steps).issubset(lst):
             return True
+
+
 # just for printing battlefield with actual information
-def print_matrix():        
+def print_matrix():
     for row in field:
         print(*row)
-    print('#'* 90)
+    print("#" * 90)
+
 
 # this func for changing digit to players's sign
-def change_sign(sign:str, move:int):
-    for i in range(len(field)):
-        if move in field[i]:
-            field[i][field[i].index(move)] = sign
+def change_sign(sign: str, move: int):
+    for number in range(len(field)):
+        if move in field[number]:
+            field[number][field[number].index(move)] = sign
             break
+
+
 # main func for game
 def game_processing():
     print(f"You play with {person_sign}")
     print_matrix()
-    global status   
+    global status
     while status is not True:
         if len(all_steps) > 0:
-            change_sign(person_sign,person_move())
-            status = check_status(person_steps_hystory)
+            change_sign(person_sign, person_move())
+            status = check_status(person_steps_history)
             print_matrix()
             print(f"You play with {person_sign}")
             print(f"Computer play with {computer_sign}")
@@ -85,7 +122,7 @@ def game_processing():
                 message = f"The Winner is {person}"
                 break
             else:
-                change_sign(computer_sign,computer_step())
+                change_sign(computer_sign, computer_step())
                 status = check_status(computer_steps_history)
                 print_matrix()
                 if status:
