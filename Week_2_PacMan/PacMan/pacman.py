@@ -1,12 +1,37 @@
 import os
 import pygame
-from pygame.sprite import Group
+from pygame.sprite import Group, spritecollide
 
 from game_object import GameObject
+from text import Text
 
 
 class PacMan(GameObject):
     sprite_filename = "pacman"
+    width: int = 34
+    height: int = 34
+
+
+class Blinky(GameObject):
+    sprite_filename = "Blinky"
+    width: int = 35
+    height: int = 35
+    # (46, 923)
+    # (46, 44)
+    # (1204, 44)
+    # (1204, 917)
+
+
+class Clyde(Blinky):
+    sprite_filename = "Clyde"
+
+
+class Inky(Blinky):
+    sprite_filename = "Inky"
+
+
+class Pinky(Blinky):
+    sprite_filename = "pinky"
 
 
 class Wall(GameObject):
@@ -47,81 +72,44 @@ def calculate_walls_coordinates(
                     ),
                 ]
             )
-    for block_num in range(2, horizontal_wall_block_ammount // 2 - 1):
-        walls_coordinates.extend(
-            [
-                ((block_num) * wall_block_width, 2 * wall_block_height),
-            ]
-        )
-    for block_num in range(
-        horizontal_wall_block_ammount // 2 + 1, horizontal_wall_block_ammount - 2
-    ):
-        walls_coordinates.extend(
-            [
-                ((block_num) * wall_block_width, 2 * wall_block_height),
-            ]
-        )
-        # for block_num in range(2 + 2, vertical_wall_block_ammount - 2 - 2):
-        #     walls_coordinates.extend(
-        #         [
-        #             ((2 + 2) * wall_block_width, block_num * wall_block_height),
-        #             (
-        #                 (horizontal_wall_block_ammount - 3 - 2) * wall_block_width,
-        #                 block_num * wall_block_height,
-        #             ),
-        #         ]
-        #     )
-        # for block_num in range(2 + 2 + 2, vertical_wall_block_ammount - 2 - 2 - 2):
-        #     walls_coordinates.extend(
-        #         [
-        #             ((2 + 2 + 2) * wall_block_width, block_num * wall_block_height),
-        #             (
-        #                 (horizontal_wall_block_ammount - 3 - 2 - 2) * wall_block_width,
-        #                 block_num * wall_block_height,
-        #             ),
-        #         ]
-        #     )
-
-        # for block_num in range(2 + 2 + 2 + 2, vertical_wall_block_ammount - 2 - 2 - 2):
-        #     walls_coordinates.extend(
-        #         [
-        #             ((2 + 2 + 2 + 2) * wall_block_width, block_num * wall_block_height),
-        #             (
-        #                 (horizontal_wall_block_ammount - 3 - 2 - 2 - 2) * wall_block_width,
-        #                 block_num * wall_block_height,
-        #             ),
-        #         ]
-        #     )
-
-        # for block_num in range(
-        #     2 + 2 + 2 + 2 + 2, vertical_wall_block_ammount - 2 - 2 - 2 - 2
-        # ):
-        #     walls_coordinates.extend(
-        #         [
-        #             ((2 + 2 + 2 + 2 + 2) * wall_block_width, block_num * wall_block_height),
-        #             (
-        #                 (horizontal_wall_block_ammount - 3 - 2 - 2 - 2 - 2)
-        #                 * wall_block_width,
-        #                 block_num * wall_block_height,
-        #             ),
-        #         ]
-        #     )
-        # for block_num in range(
-        #     2 + 2 + 2 + 2 + 2 + 2, vertical_wall_block_ammount - 2 - 2 - 2 - 2 - 2
-        # ):
-        #     walls_coordinates.extend(
-        #         [
-        #             (
-        #                 (2 + 2 + 2 + 2 + 2 + 2) * wall_block_width,
-        #                 block_num * wall_block_height,
-        #             ),
-        #             (
-        #                 (horizontal_wall_block_ammount - 3 - 2 - 2 - 2 - 2 - 2)
-        #                 * wall_block_width,
-        #                 block_num * wall_block_height,
-        #             ),
-        #         ]
-        #     )
+    for time in range(1, 6):
+        for block_num in range(2 * time, horizontal_wall_block_ammount // 2 - 1):
+            walls_coordinates.extend(
+                [
+                    ((block_num) * wall_block_width, time * 2 * wall_block_height),
+                ]
+            )
+        for block_num in range(
+            horizontal_wall_block_ammount // 2 + 1,
+            horizontal_wall_block_ammount - 2 * time,
+        ):
+            walls_coordinates.extend(
+                [
+                    ((block_num) * wall_block_width, 2 * time * wall_block_height),
+                ]
+            )
+    for time in range(1, 6):
+        for block_num in range(time, horizontal_wall_block_ammount // 2 - 2 - time):
+            walls_coordinates.extend(
+                [
+                    (
+                        (block_num + 1 + 1 * time) * wall_block_width,
+                        screen_heights - wall_block_height * (1 + 2 * time),
+                    ),
+                ]
+            )
+        for block_num in range(
+            horizontal_wall_block_ammount // 2 + 1,
+            horizontal_wall_block_ammount - 2 * time,
+        ):
+            walls_coordinates.extend(
+                [
+                    (
+                        (block_num) * wall_block_height,
+                        screen_heights - wall_block_height * (1 + 2 * time),
+                    ),
+                ]
+            )
 
     return walls_coordinates
 
@@ -133,6 +121,11 @@ def compose_context(screen):
     return {
         "pacman": PacMan(screen.get_width() // 2, screen.get_height() // 2),
         "walls": Group(*[Wall(x, y) for x, y, in walls_coordinates]),
+        "score": 0,
+        "blinky": Blinky(46, 923),
+        "clyde": Clyde(46, 44),
+        "inky": Inky(1204, 44),
+        "pinky": Pinky(1204, 917),
     }
 
 
@@ -140,6 +133,12 @@ def draw_whole_screen(screen, context):
     screen.fill("gray")
     context["pacman"].draw(screen)
     context["walls"].draw(screen)
+    context["blinky"].draw(screen)
+    context["clyde"].draw(screen)
+    context["inky"].draw(screen)
+    context["pinky"].draw(screen)
+
+    Text(str(context["score"]), (10, 10)).draw(screen)
 
 
 def main():
@@ -170,7 +169,9 @@ def main():
             context["pacman"].rect = context["pacman"].rect.move(-1 * player_speed, 0)
         if keys[pygame.K_d]:
             context["pacman"].rect = context["pacman"].rect.move(player_speed, 0)
-
+        if spritecollide(context["pacman"], context["walls"], dokill=False):
+            context["pacman"].rect.topleft = old_player_topleft
+        context["score"] = old_player_topleft
     pygame.quit()
 
 
