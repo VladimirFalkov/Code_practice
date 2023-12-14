@@ -20,7 +20,7 @@ def get_lat_lon(country_code: str, city_name: str):
 
 def get_weather(ip):
     country_code, city_name = get_location(ip)
-    access_key = "8c4db85b35d5a86cf293da4685a2ca13"
+    access_key = env("SECRET_API_KEYS_FOR_WEATHER")
     api_result = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?q={city_name},{country_code}&units=metric&appid={access_key}"
     )
